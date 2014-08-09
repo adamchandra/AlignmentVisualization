@@ -50,7 +50,7 @@ object AlignmentVisualize extends js.JSApp {
     val scale = 2
 
     val width: js.Number = scale * ((s2.length + 1) * interval) + 100
-    val height: js.Number = scale * ((s1.length + 1) * interval) + 100
+    val height: js.Number = scale * ((s1.length + 1) * interval) + 50
 
     jQuery("svg").remove()
 
@@ -88,7 +88,6 @@ object AlignmentVisualize extends js.JSApp {
       .attr("width", (ov: Option[Int]) => size)
       .attr("height", (ov: Option[Int]) => size)
       .style("opacity", (ov: Option[Int], i: js.Number) => 1.asInstanceOf[js.Dynamic])
-      .attr(js.Dynamic.literal("text-anchor" -> "middle"))
 
 
     val pathInterval = math.min(300,3000 / r.path.length)
@@ -120,9 +119,10 @@ object AlignmentVisualize extends js.JSApp {
 
     val scores = rects.append("text")
       .attr("class", "score")
-      .attr("x", (ov: Option[Int], i: js.Number) => xi(i.toInt) * interval + 23)
-      .attr("y", (ov: Option[Int], i: js.Number) => yi(i.toInt) * interval + 30)
+      .attr("x", (ov: Option[Int], i: js.Number) => xi(i.toInt) * interval + 27)
+      .attr("y", (ov: Option[Int], i: js.Number) => yi(i.toInt) * interval + 28)
       .text((ov: Option[Int], i: js.Number) => ov.getOrElse("").toString)
+      .attr("text-anchor","middle")
 
 
     val arrows = rects.append("text")

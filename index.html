@@ -4,7 +4,7 @@
     <title>Sequence alignment visualization</title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
     <style>
         g.axis text {
@@ -37,14 +37,23 @@
             fill: #ebe5ff;
         }
 
+        rect {
+            stroke: rgba(0,0,0,0);
+        }
+
         rect.on-path {
             stroke: #000000;
             stroke-width: 2px;
+            transition: stroke linear 0.3s;
         }
 
         textarea {
             font-family: "Courier New", monospace;
             font-size: 14px;
+        }
+
+        .talabel {
+            width: 80px;
         }
 
 
@@ -58,13 +67,13 @@
         <h2>Pairwise DNA sequence alignment</h2>
 
         <div>
-            <label for="s1">S1: </label> <textarea id='s1' cols='30' rows='5'>GCCCTAGCG</textarea>
+            <label class='talabel' for="s1">S1: </label> <textarea id='s1' cols='60' rows='2'>GCCCTAGCCCTAGCGT</textarea>
         </div>
         <div>
-            <label for="s2">S2: </label> <textarea id='s2' cols='30' rows='5'>GCGCAATG</textarea>
+            <label class='talabel' for="s2">S2: </label> <textarea id='s2' cols='60' rows='2'>GCGCAATGGAAACTAGCGAA</textarea>
         </div>
         <div>
-            <label for="method">Method: </label>
+            <label class='talabel' for="method">Method: </label>
             <select name="" id="method">
                 <option value="lcs">Longest common subsequence</option>
                 <option value="needleman" selected>Needleman-Wunsch (= Global)</option>
@@ -77,13 +86,13 @@
             </div> -->
             <input type="button" class='btn btn-sm' value='Recalc' id='docalc'/></div>
         <div>
-            <label for="result">Result: </label> <textarea id='result' cols='100' rows='2'></textarea>
+            <label class='talabel' for="result">Result: </label> <textarea id='result' cols='60' rows='2'></textarea>
         </div>
 
     </div>
     <div class='row' id='svgdiv'></div>
     <footer>
-        <p><span style='color: blue;'>Matching</span>, <span style='color: #FF2A82;'>Mismatch</span>, <span style='color: gray;'>Missing</span></p>
+        <p>Nucleobase: <span style='color: blue;'>matching</span>, <span style='color: #FF2A82;'>mismatch</span>, <span style='color: gray;'>missing</span></p>
         <a href="http://www.ibm.com/developerworks/opensource/library/j-seqalign/index.html">Algorithm</a><br>
         <a href="https://github.com/hirokai/AlignmentVisualization">Source code</a>
     </footer>
@@ -93,7 +102,7 @@
 <script type="text/javascript" src="http://cdn.jsdelivr.net/jquery/2.1.1/jquery.js"></script>
 <script type="text/javascript" src='http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.9/d3.js'></script>
 
-<script type="text/javascript" src="./target/scala-2.11/example-fastopt.js"></script>
+<script type="text/javascript" src="./target/scala-2.11/example-opt.js"></script>
 <!-- <script type="text/javascript" src="./target/scala-2.11/alignment-fastopt.js"></script> -->
 <script type="text/javascript" src="./target/scala-2.11/example-launcher.js"></script>
 
