@@ -7,14 +7,9 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
     <style>
-
-        rect {
-         //   fill: #ffeff2;
-        }
-
         g.axis text {
             font-size: 10px;
-            fill: #000081;
+/*            fill: #000081; */
         }
 
         text.score {
@@ -60,7 +55,7 @@
 <body>
 <div class="container">
     <div class='row'>
-        <h2>Pairwise sequence alignment</h2>
+        <h2>Pairwise DNA sequence alignment</h2>
 
         <div>
             <label for="s1">S1: </label> <textarea id='s1' cols='30' rows='5'>GCCCTAGCG</textarea>
@@ -75,6 +70,11 @@
                 <option value="needleman" selected>Needleman-Wunsch (= Global)</option>
                 <option value="smith">Smith-Waterman (= Local)</option>
             </select>
+<!--            <div class="btn-group">
+                <input type="button" class="btn btn-sm btn-default method" value='Longest common subsequence'>
+                <input type="button" class="btn btn-sm btn-default method" value='Needleman-Wunsch (= Global)'>
+                <input type="button" class="btn btn-sm btn-default method" value='Smith-Waterman (= Local)'>
+            </div> -->
             <input type="button" class='btn btn-sm' value='Recalc' id='docalc'/></div>
         <div>
             <label for="result">Result: </label> <textarea id='result' cols='100' rows='2'></textarea>
@@ -83,6 +83,8 @@
     </div>
     <div class='row' id='svgdiv'></div>
     <footer>
+        <p><span style='color: blue;'>Matching</span>, <span style='color: #FF2A82;'>Mismatch</span>, <span style='color: gray;'>Missing</span></p>
+        <a href="http://www.ibm.com/developerworks/opensource/library/j-seqalign/index.html">Algorithm</a><br>
         <a href="https://github.com/hirokai/AlignmentVisualization">Source code</a>
     </footer>
 

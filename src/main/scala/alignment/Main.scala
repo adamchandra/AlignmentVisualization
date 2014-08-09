@@ -34,6 +34,9 @@ object AlignmentVisualize extends js.JSApp {
         dom.window.alert("Invalid input.")
       }
     })
+    jQuery("button.method").click(() => {
+
+    })
     jQuery("#docalc").click()
   }
 
@@ -44,7 +47,7 @@ object AlignmentVisualize extends js.JSApp {
     val interval = 15
     val size = 12
 
-    val scale = 1.5
+    val scale = 2
 
     val width: js.Number = scale * ((s2.length + 1) * interval) + 100
     val height: js.Number = scale * ((s1.length + 1) * interval) + 100
@@ -127,6 +130,11 @@ object AlignmentVisualize extends js.JSApp {
       .attr("y", (ov: Option[Int], i: js.Number) => yi(i.toInt) * interval + 30)
       .attr("text-anchor","middle")
 
+    def textcolor(m: Array[Matching.Value], i: Int): String = m(i) match {
+      case Matching.Match => "blue"
+      case Matching.Mismatch => "#FF2A82"
+      case Matching.Missing => "gray"
+    }
 
     val axisx = svg.append("g").attr("class", "axis")
       .attr("transform", s"scale($scale)")
@@ -136,6 +144,7 @@ object AlignmentVisualize extends js.JSApp {
       .append("text")
       .attr("x", (ov: Char, i: js.Number) => (i + 1) * interval + 22)
       .attr("y", 15)
+      .style("fill", (ov: Char, i: js.Number) => textcolor(r.match2, i.toInt),"")
       .text((v: Char, i: js.Number) => v.toString)
 
     val axisy = svg.append("g").attr("class", "axis")
@@ -146,6 +155,7 @@ object AlignmentVisualize extends js.JSApp {
       .append("text")
       .attr("y", (ov: Char, i: js.Number) => (i + 1) * interval + 30)
       .attr("x", 10)
+      .style("fill", (ov: Char, i: js.Number) => textcolor(r.match1, i.toInt),"")
       .text((v: Char, i: js.Number) => v.toString)
 
     rects.data(cells).attr("class", (ov: Option[Int], i: js.Number) => if (ov.isDefined) "done" else "")

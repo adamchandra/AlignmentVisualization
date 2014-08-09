@@ -28,8 +28,13 @@ object Direction extends Enumeration {
   val Left, Top, LeftTop = Value
 }
 
+object Matching extends Enumeration {
+  val Match, Mismatch, Missing = Value
+}
+
 case class Result(cells: Array[Array[Option[Int]]], arrows: Array[Array[Option[Direction.Value]]]
-                  , str: Array[String], path: Array[(Int, Int, Char, Char)] = Array())
+                  , str: Array[String], path: Array[(Int, Int, Char, Char)]
+                  , match1: Array[Matching.Value], match2: Array[Matching.Value])
 
 trait Alignment {
   def calc: Result
@@ -53,13 +58,16 @@ class LCS(s1: Array[Char], s2: Array[Char]) extends Alignment {
       cells(y)(x) = Some(mx._1)
       arr(y)(x) = Some(mx._2)
     }
-    val (str, path) = traceback(cells, arr)
-    Result(cells, arr, Array(str), path)
+    val (str, path, m1, m2) = traceback(cells, arr)
+    Result(cells, arr, Array(str), path, m1, m2)
   }
 
-  def traceback(cells: Array[Array[Option[Int]]], arr: Array[Array[Option[Direction.Value]]]): (String, Array[(Int, Int, Char, Char)]) = {
+  def traceback(cells: Array[Array[Option[Int]]], arr: Array[Array[Option[Direction.Value]]])
+    : (String, Array[(Int, Int, Char, Char)], Array[Matching.Value], Array[Matching.Value]) = {
     var (y, x) = (s1.length, s2.length)
     val res = new StringBuffer
+    val m1 = Array.fill(s1.length)(Matching.Missing)
+    val m2 = Array.fill(s2.length)(Matching.Missing)
 
     val poss = new mutable.ArrayBuffer[(Int, Int)]
     val poss2 = new mutable.ArrayBuffer[(Int, Int, Char, Char)]
@@ -75,6 +83,13 @@ class LCS(s1: Array[Char], s2: Array[Char]) extends Alignment {
       poss.append((y, x))
       if (prev((y, x), dir) < cells(y)(x).get) {
         res.append(s1(y - 1))
+        dir match {
+          case Direction.LeftTop => {
+            m1(y-1) = Matching.Match
+            m2(x-1) = Matching.Match
+          }
+          case _ =>
+        }
       }
       poss2.append((y, x, s1(y - 1), s2(x - 1)))
       val t = posAt(y, x, dir)
@@ -83,7 +98,7 @@ class LCS(s1: Array[Char], s2: Array[Char]) extends Alignment {
     }
     println(poss.mkString(","))
     println(poss2.mkString(","))
-    (res.reverse.toString, poss2.toArray)
+    (res.reverse.toString, poss2.toArray,m1,m2)
   }
 }
 
@@ -104,12 +119,12 @@ class Smith(s1: Array[Char], s2: Array[Char]) extends Alignment {
       cells(y)(x) = Some(mx._1)
       path(y)(x) = if(mx._1 > 0) Some(Direction.LeftTop) else None
     }
-    val (str,path2) = traceback(cells, path)
-    Result(cells, path, str, path2)
+    val (str,path2, m1, m2) = traceback(cells, path)
+    Result(cells, path, str, path2, m1, m2)
   }
 
   def traceback(cells: Array2[Option[Int]],
-                     arr: Array2[Option[Direction.Value]]): (Array[String],Array[(Int,Int,Char,Char)]) = {
+                     arr: Array2[Option[Direction.Value]]): (Array[String],Array[(Int,Int,Char,Char)], Array[Matching.Value], Array[Matching.Value]) = {
     // pos: (row, col)
     var (y, x) = {
       val ci: Array2[((Int, Int), Option[Int])] = add2DIdx(cells)
@@ -117,6 +132,8 @@ class Smith(s1: Array[Char], s2: Array[Char]) extends Alignment {
     }
     val ss1 = new StringBuffer
     val ss2 = new StringBuffer
+    val m1 = Array.fill(s1.length)(Matching.Missing)
+    val m2 = Array.fill(s2.length)(Matching.Missing)
     val poss = new mutable.ArrayBuffer[(Int, Int, Char, Char)]
 
     while (cells(y)(x).get > 0) {
@@ -128,14 +145,23 @@ class Smith(s1: Array[Char], s2: Array[Char]) extends Alignment {
         case Direction.Left => {
           ss1.append('-')
           ss2.append(s2(x))
+          m2(x - 1) = Matching.Match
         }
         case Direction.Top => {
           ss1.append(s1(y))
           ss2.append('-')
+          m1(y - 1) = Matching.Match
         }
         case Direction.LeftTop => {
           ss1.append(s1(y-1))
           ss2.append(s2(x-1))
+          if(s1(y - 1) == s2(x - 1)){
+            m1(y - 1) = Matching.Match
+            m2(x - 1) = Matching.Match
+          }else{
+            m1(y - 1) = Matching.Mismatch
+            m2(x - 1) = Matching.Mismatch
+          }
         }
       }
       val t = posAt(y, x, dir)
@@ -143,7 +169,7 @@ class Smith(s1: Array[Char], s2: Array[Char]) extends Alignment {
       x = t._2
     }
     println(poss.mkString(","))
-    (Array(ss1.reverse.toString, ss2.reverse.toString),poss.toArray)
+    (Array(ss1.reverse.toString, ss2.reverse.toString),poss.toArray, m1, m2)
   }
 
 }
@@ -170,14 +196,17 @@ class Needleman(s1: Array[Char], s2: Array[Char]) extends Alignment {
       path(y)(x) = Some(mx._2)
     }
 
-    val (str,path2) = tracebackNeedleman(cells, path)
-    Result(cells, path, str, path2)
+    val (str,path2,m1,m2) = traceback(cells, path)
+    Result(cells, path, str, path2,m1,m2)
   }
 
-  def tracebackNeedleman(cells: Array2[Option[Int]], arr: Array2[Option[Direction.Value]]): (Array[String], Array[(Int, Int, Char, Char)]) = {
+  def traceback(cells: Array2[Option[Int]], arr: Array2[Option[Direction.Value]])
+  : (Array[String], Array[(Int, Int, Char, Char)], Array[Matching.Value], Array[Matching.Value]) = {
     var (y, x) = (s1.length, s2.length)
     val ss1 = new StringBuffer
     val ss2 = new StringBuffer
+    val m1 = Array.fill(s1.length)(Matching.Missing)
+    val m2 = Array.fill(s2.length)(Matching.Missing)
     val poss = new mutable.ArrayBuffer[(Int, Int)]
     val poss2 = new mutable.ArrayBuffer[(Int, Int, Char, Char)]
 
@@ -191,14 +220,23 @@ class Needleman(s1: Array[Char], s2: Array[Char]) extends Alignment {
         case Direction.Left => {
           ss1.append('-')
           ss2.append(s2(x - 1))
+          m2(x - 1) = Matching.Match
         }
         case Direction.Top => {
           ss1.append(s1(y - 1))
           ss2.append('-')
+          m1(y - 1) = Matching.Match
         }
         case Direction.LeftTop => {
           ss1.append(s1(y - 1))
           ss2.append(s2(x - 1))
+          if(s1(y - 1) == s2(x - 1)){
+            m1(y - 1) = Matching.Match
+            m2(x - 1) = Matching.Match
+          }else{
+            m1(y - 1) = Matching.Mismatch
+            m2(x - 1) = Matching.Mismatch
+          }
         }
       }
       poss2.append((y, x, s1(y - 1), s2(x - 1)))
@@ -208,7 +246,7 @@ class Needleman(s1: Array[Char], s2: Array[Char]) extends Alignment {
       x = t._2
     }
     println(poss.mkString(","))
-    (Array(ss1.reverse.toString, ss2.reverse.toString),poss2.toArray)
+    (Array(ss1.reverse.toString, ss2.reverse.toString),poss2.toArray,m1,m2)
   }
 
 }
