@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sequence alignment visualization</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+    <style>
+
+        rect {
+         //   fill: #ffeff2;
+        }
+
+        g.axis text {
+            font-size: 10px;
+            fill: #000081;
+        }
+
+        text.score {
+            font-size: 6px;
+            fill: black;
+        }
+
+        text.arrow {
+            font-size: 5px;
+        }
+
+        circle.top {
+            fill: #ff0019;
+        }
+
+        circle.left {
+            fill: blue;
+        }
+
+        circle.lefttop {
+            fill: #18ff06;
+        }
+
+        circle.none {
+            fill: #ebe5ff;
+        }
+
+        rect.on-path {
+            stroke: #000000;
+            stroke-width: 2px;
+        }
+
+        textarea {
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+        }
+
+
+    </style>
+
+
+</head>
+<body>
+<div class="container">
+    <div class='row'>
+        <h2>Pairwise sequence alignment</h2>
+
+        <div>
+            <label for="s1">S1: </label> <textarea id='s1' cols='30' rows='5'>GCCCTAGCG</textarea>
+        </div>
+        <div>
+            <label for="s2">S2: </label> <textarea id='s2' cols='30' rows='5'>GCGCAATG</textarea>
+        </div>
+        <div>
+            <label for="method">Method: </label>
+            <select name="" id="method">
+                <option value="lcs">Longest common subsequence</option>
+                <option value="needleman" selected>Needleman-Wunsch (= Global)</option>
+                <option value="smith">Smith-Waterman (= Local)</option>
+            </select>
+            <input type="button" class='btn btn-sm' value='Recalc' id='docalc'/></div>
+        <div>
+            <label for="result">Result: </label> <textarea id='result' cols='100' rows='2'></textarea>
+        </div>
+
+    </div>
+    <div class='row' id='svgdiv'></div>
+    <footer>
+        <a href="https://github.com/hirokai/AlignmentVisualization">Source code</a>
+    </footer>
+
+</div>
+
+<script type="text/javascript" src="http://cdn.jsdelivr.net/jquery/2.1.1/jquery.js"></script>
+<script type="text/javascript" src='http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.9/d3.js'></script>
+
+<script type="text/javascript" src="./target/scala-2.11/example-fastopt.js"></script>
+<!-- <script type="text/javascript" src="./target/scala-2.11/alignment-fastopt.js"></script> -->
+<script type="text/javascript" src="./target/scala-2.11/example-launcher.js"></script>
+
+</body>
+</html>
